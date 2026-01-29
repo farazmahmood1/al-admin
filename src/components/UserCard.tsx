@@ -1,4 +1,4 @@
-import { User, Worker } from '../types';
+import type { User, Worker } from '../types';
 import { Eye, CheckCircle, XCircle, User as UserIcon } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -26,28 +26,26 @@ export default function UserCard({ user, onView, onApprove, onReject, showAction
             <p className="text-sm text-gray-600">{user.email}</p>
             <p className="text-sm text-gray-500">{user.phoneNumber}</p>
             <div className="flex items-center space-x-2 mt-2">
-              <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                user.role === 'worker' 
-                  ? 'bg-blue-100 text-blue-800'
-                  : 'bg-green-100 text-green-800'
-              }`}>
+              <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${user.role === 'worker'
+                ? 'bg-blue-100 text-blue-800'
+                : 'bg-green-100 text-green-800'
+                }`}>
                 {user.role}
               </span>
-              <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                user.status === 'approved' 
-                  ? 'bg-green-100 text-green-800'
-                  : user.status === 'pending'
+              <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${user.status === 'approved'
+                ? 'bg-green-100 text-green-800'
+                : user.status === 'pending'
                   ? 'bg-yellow-100 text-yellow-800'
                   : user.status === 'rejected'
-                  ? 'bg-red-100 text-red-800'
-                  : 'bg-gray-100 text-gray-800'
-              }`}>
+                    ? 'bg-red-100 text-red-800'
+                    : 'bg-gray-100 text-gray-800'
+                }`}>
                 {user.status}
               </span>
             </div>
           </div>
         </div>
-        
+
         {showActions && (
           <div className="flex space-x-2">
             <button
@@ -78,7 +76,7 @@ export default function UserCard({ user, onView, onApprove, onReject, showAction
           </div>
         )}
       </div>
-      
+
       <div className="mt-4 space-y-2">
         <div className="text-sm text-gray-600">
           <span className="font-medium">Address:</span> {user.profile.address}
@@ -93,21 +91,21 @@ export default function UserCard({ user, onView, onApprove, onReject, showAction
             <span className="font-medium">CNIC Photos:</span>
             <div className="flex space-x-2 mt-1">
               <div className="relative">
-                <img 
-                  src={user.profile.cnicPhotos.front} 
-                  alt="CNIC Front" 
+                <img
+                  src={user.profile.cnicPhotos.front}
+                  alt="CNIC Front"
                   className="w-20 h-16 object-cover rounded border cursor-pointer hover:opacity-80 transition-opacity"
-                  onClick={() => window.open(user.profile.cnicPhotos.front, '_blank')}
+                  onClick={() => user.profile.cnicPhotos?.front && window.open(user.profile.cnicPhotos.front, '_blank')}
                   title="Click to view full size"
                 />
                 <span className="absolute -bottom-1 left-0 right-0 text-xs text-center bg-black bg-opacity-75 text-white rounded-b">Front</span>
               </div>
               <div className="relative">
-                <img 
-                  src={user.profile.cnicPhotos.back} 
-                  alt="CNIC Back" 
+                <img
+                  src={user.profile.cnicPhotos.back}
+                  alt="CNIC Back"
                   className="w-20 h-16 object-cover rounded border cursor-pointer hover:opacity-80 transition-opacity"
-                  onClick={() => window.open(user.profile.cnicPhotos.back, '_blank')}
+                  onClick={() => user.profile.cnicPhotos?.back && window.open(user.profile.cnicPhotos.back, '_blank')}
                   title="Click to view full size"
                 />
                 <span className="absolute -bottom-1 left-0 right-0 text-xs text-center bg-black bg-opacity-75 text-white rounded-b">Back</span>

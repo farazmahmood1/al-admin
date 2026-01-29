@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import { 
-  Users, 
-  UserCheck, 
-  UserX, 
-  AlertTriangle, 
-  DollarSign, 
+import {
+  Users,
+  UserCheck,
+
+  AlertTriangle,
+  DollarSign,
   TrendingUp,
   Clock,
   CheckCircle,
@@ -13,14 +13,14 @@ import {
   MoreHorizontal
 } from 'lucide-react';
 import { format } from 'date-fns';
-import { 
-  getDashboardStats, 
-  getPendingUsers, 
-  getAllUsers, 
-  getDisputes, 
-  approveUser, 
-  rejectUser, 
-  suspendUser, 
+import {
+  getDashboardStats,
+  getPendingUsers,
+  getAllUsers,
+  getDisputes,
+  approveUser,
+  rejectUser,
+  suspendUser,
   resolveDispute,
   testFirebaseConnection
 } from './services/adminService';
@@ -51,7 +51,7 @@ export default function Dashboard({ username, onLogout }: DashboardProps) {
     const initializeAndLoad = async () => {
       try {
         console.log('🚀 Initializing admin dashboard...');
-        
+
         // Initialize admin authentication first
         const adminUser = await initializeAdminAuth();
         if (adminUser) {
@@ -77,27 +77,27 @@ export default function Dashboard({ username, onLogout }: DashboardProps) {
     setLoading(true);
     try {
       console.log('🔄 Loading dashboard data...');
-      
+
       // Test Firebase connection first
       const isConnected = await testFirebaseConnection();
       if (!isConnected) {
         console.error('❌ Firebase connection failed, cannot load data');
         return;
       }
-      
+
       const [statsData, pendingUsersData, allUsersData, disputesData] = await Promise.all([
         getDashboardStats(),
         getPendingUsers(),
         getAllUsers(),
         getDisputes()
       ]);
-      
+
       console.log('📊 Dashboard data loaded:');
       console.log('📈 Stats:', statsData);
       console.log('👥 Pending users:', pendingUsersData.length);
       console.log('👥 All users:', allUsersData.length);
       console.log('⚖️ Disputes:', disputesData.length);
-      
+
       setStats(statsData);
       setPendingUsers(pendingUsersData);
       setAllUsers(allUsersData);
@@ -122,7 +122,7 @@ export default function Dashboard({ username, onLogout }: DashboardProps) {
 
   const handleRejectUser = async (userId: string) => {
     if (!rejectionReason.trim()) return;
-    
+
     try {
       await rejectUser(userId, 'admin-1', rejectionReason);
       await loadDashboardData();
@@ -136,7 +136,7 @@ export default function Dashboard({ username, onLogout }: DashboardProps) {
 
   const handleSuspendUser = async (userId: string) => {
     if (!suspensionReason.trim()) return;
-    
+
     try {
       await suspendUser(userId, 'admin-1', suspensionReason);
       await loadDashboardData();
@@ -150,7 +150,7 @@ export default function Dashboard({ username, onLogout }: DashboardProps) {
 
   const handleResolveDispute = async (disputeId: string) => {
     if (!disputeResolution.trim()) return;
-    
+
     try {
       await resolveDispute(disputeId, 'admin-1', disputeResolution);
       await loadDashboardData();
@@ -212,11 +212,10 @@ export default function Dashboard({ username, onLogout }: DashboardProps) {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === tab.id
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
+                className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === tab.id
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
               >
                 {tab.label}
                 {tab.id === 'approvals' && pendingUsers.length > 0 && (
@@ -250,7 +249,7 @@ export default function Dashboard({ username, onLogout }: DashboardProps) {
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-white rounded-lg shadow p-6">
                 <div className="flex items-center">
                   <UserCheck className="h-8 w-8 text-green-600" />
@@ -260,19 +259,19 @@ export default function Dashboard({ username, onLogout }: DashboardProps) {
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-white rounded-lg shadow p-6">
-                  <div className="flex items-center">
+                <div className="flex items-center">
                   <Clock className="h-8 w-8 text-orange-600" />
                   <div className="ml-4">
                     <p className="text-sm font-medium text-gray-600">Pending Approvals</p>
                     <p className="text-2xl font-semibold text-gray-900">{stats.pendingApprovals}</p>
                   </div>
-                    </div>
-                    </div>
-              
+                </div>
+              </div>
+
               <div className="bg-white rounded-lg shadow p-6">
-                  <div className="flex items-center">
+                <div className="flex items-center">
                   <DollarSign className="h-8 w-8 text-purple-600" />
                   <div className="ml-4">
                     <p className="text-sm font-medium text-gray-600">Total Revenue</p>
@@ -280,7 +279,7 @@ export default function Dashboard({ username, onLogout }: DashboardProps) {
                   </div>
                 </div>
               </div>
-                    </div>
+            </div>
 
             {/* Additional Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -290,10 +289,10 @@ export default function Dashboard({ username, onLogout }: DashboardProps) {
                   <div className="ml-4">
                     <p className="text-sm font-medium text-gray-600">Active Bookings</p>
                     <p className="text-2xl font-semibold text-gray-900">{stats.activeBookings}</p>
-                    </div>
                   </div>
                 </div>
-              
+              </div>
+
               <div className="bg-white rounded-lg shadow p-6">
                 <div className="flex items-center">
                   <CheckCircle className="h-8 w-8 text-green-600" />
@@ -302,7 +301,7 @@ export default function Dashboard({ username, onLogout }: DashboardProps) {
                     <p className="text-2xl font-semibold text-gray-900">{stats.completedBookings}</p>
                   </div>
                 </div>
-            </div>
+              </div>
 
               <div className="bg-white rounded-lg shadow p-6">
                 <div className="flex items-center">
@@ -369,11 +368,10 @@ export default function Dashboard({ username, onLogout }: DashboardProps) {
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            user.role === 'worker' 
-                              ? 'bg-blue-100 text-blue-800'
-                              : 'bg-green-100 text-green-800'
-                          }`}>
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${user.role === 'worker'
+                            ? 'bg-blue-100 text-blue-800'
+                            : 'bg-green-100 text-green-800'
+                            }`}>
                             {user.role}
                           </span>
                         </td>
@@ -384,21 +382,21 @@ export default function Dashboard({ username, onLogout }: DashboardProps) {
                           {user.profile.cnicPhotos ? (
                             <div className="flex space-x-2">
                               <div className="relative">
-                                <img 
-                                  src={user.profile.cnicPhotos.front} 
-                                  alt="CNIC Front" 
+                                <img
+                                  src={user.profile.cnicPhotos.front}
+                                  alt="CNIC Front"
                                   className="w-16 h-12 object-cover rounded border cursor-pointer hover:opacity-80 transition-opacity"
-                                  onClick={() => window.open(user.profile.cnicPhotos.front, '_blank')}
+                                  onClick={() => user.profile.cnicPhotos?.front && window.open(user.profile.cnicPhotos.front, '_blank')}
                                   title="Click to view full size"
                                 />
                                 <span className="absolute -bottom-1 left-0 right-0 text-xs text-center bg-black bg-opacity-75 text-white rounded-b">Front</span>
                               </div>
                               <div className="relative">
-                                <img 
-                                  src={user.profile.cnicPhotos.back} 
-                                  alt="CNIC Back" 
+                                <img
+                                  src={user.profile.cnicPhotos.back}
+                                  alt="CNIC Back"
                                   className="w-16 h-12 object-cover rounded border cursor-pointer hover:opacity-80 transition-opacity"
-                                  onClick={() => window.open(user.profile.cnicPhotos.back, '_blank')}
+                                  onClick={() => user.profile.cnicPhotos?.back && window.open(user.profile.cnicPhotos.back, '_blank')}
                                   title="Click to view full size"
                                 />
                                 <span className="absolute -bottom-1 left-0 right-0 text-xs text-center bg-black bg-opacity-75 text-white rounded-b">Back</span>
@@ -494,24 +492,22 @@ export default function Dashboard({ username, onLogout }: DashboardProps) {
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            user.role === 'worker' 
-                              ? 'bg-blue-100 text-blue-800'
-                              : 'bg-green-100 text-green-800'
-                          }`}>
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${user.role === 'worker'
+                            ? 'bg-blue-100 text-blue-800'
+                            : 'bg-green-100 text-green-800'
+                            }`}>
                             {user.role}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            user.status === 'approved' 
-                              ? 'bg-green-100 text-green-800'
-                              : user.status === 'pending'
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${user.status === 'approved'
+                            ? 'bg-green-100 text-green-800'
+                            : user.status === 'pending'
                               ? 'bg-yellow-100 text-yellow-800'
                               : user.status === 'rejected'
-                              ? 'bg-red-100 text-red-800'
-                              : 'bg-gray-100 text-gray-800'
-                          }`}>
+                                ? 'bg-red-100 text-red-800'
+                                : 'bg-gray-100 text-gray-800'
+                            }`}>
                             {user.status}
                           </span>
                         </td>
@@ -541,7 +537,7 @@ export default function Dashboard({ username, onLogout }: DashboardProps) {
               <div className="px-6 py-4 border-b border-gray-200">
                 <h3 className="text-lg font-medium text-gray-900">Disputes</h3>
                 <p className="text-sm text-gray-600">Manage and resolve user disputes</p>
-          </div>
+              </div>
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
@@ -575,13 +571,12 @@ export default function Dashboard({ username, onLogout }: DashboardProps) {
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            dispute.status === 'open' 
-                              ? 'bg-red-100 text-red-800'
-                              : dispute.status === 'investigating'
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${dispute.status === 'open'
+                            ? 'bg-red-100 text-red-800'
+                            : dispute.status === 'investigating'
                               ? 'bg-yellow-100 text-yellow-800'
                               : 'bg-green-100 text-green-800'
-                          }`}>
+                            }`}>
                             {dispute.status}
                           </span>
                         </td>
@@ -631,7 +626,7 @@ export default function Dashboard({ username, onLogout }: DashboardProps) {
                   <XCircle className="h-6 w-6" />
                 </button>
               </div>
-              
+
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Name</label>
@@ -695,8 +690,8 @@ export default function Dashboard({ username, onLogout }: DashboardProps) {
               </div>
             </div>
           </div>
-          </div>
-        )}
+        </div>
+      )}
     </div>
   );
 }

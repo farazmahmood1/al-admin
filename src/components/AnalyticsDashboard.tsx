@@ -1,21 +1,18 @@
 import { useState, useEffect } from 'react';
-import { 
-  TrendingUp, 
-  Users, 
-  UserCheck, 
-  DollarSign, 
+import {
+  TrendingUp,
+  Users,
+  DollarSign,
   Calendar,
   BarChart3,
   PieChart,
   Activity
 } from 'lucide-react';
-import { getDashboardStats, getAllUsers, getAllBookings } from '../services/adminService';
+import { getAllUsers, getAllBookings } from '../services/adminService';
 import type { User, Booking } from '../types';
-import type { DashboardStats } from '../types/admin';
-import { format, subDays, startOfMonth, endOfMonth } from 'date-fns';
+import { format, subDays } from 'date-fns';
 
 export default function AnalyticsDashboard() {
-  const [stats, setStats] = useState<DashboardStats | null>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
@@ -31,20 +28,17 @@ export default function AnalyticsDashboard() {
     setError(null);
     try {
       console.log('📊 Loading analytics data...');
-      
-      const [statsData, usersData, bookingsData] = await Promise.all([
-        getDashboardStats(),
+
+      const [usersData, bookingsData] = await Promise.all([
         getAllUsers(),
         getAllBookings()
       ]);
-      
+
       console.log('✅ Analytics data loaded:', {
-        stats: statsData,
         usersCount: usersData.length,
         bookingsCount: bookingsData.length
       });
-      
-      setStats(statsData);
+
       setUsers(usersData);
       setBookings(bookingsData);
     } catch (error: any) {
@@ -57,20 +51,21 @@ export default function AnalyticsDashboard() {
 
   const getFilteredBookings = () => {
     if (!bookings || bookings.length === 0) return [];
-    
+
     const now = new Date();
     const daysAgo = timeRange === '7d' ? 7 : timeRange === '30d' ? 30 : timeRange === '90d' ? 90 : 365;
     const cutoffDate = subDays(now, daysAgo);
-    
+
     return bookings.filter(booking => {
       try {
         let bookingDate: Date;
-        if (booking.createdAt instanceof Date) {
-          bookingDate = booking.createdAt;
-        } else if (booking.createdAt?.toDate) {
-          bookingDate = booking.createdAt.toDate();
+        const createdAt = booking.createdAt as any;
+        if (createdAt instanceof Date) {
+          bookingDate = createdAt;
+        } else if (createdAt?.toDate) {
+          bookingDate = createdAt.toDate();
         } else {
-          bookingDate = new Date(booking.createdAt);
+          bookingDate = new Date(createdAt);
         }
         return bookingDate >= cutoffDate;
       } catch (e) {
@@ -82,20 +77,21 @@ export default function AnalyticsDashboard() {
 
   const getFilteredUsers = () => {
     if (!users || users.length === 0) return [];
-    
+
     const now = new Date();
     const daysAgo = timeRange === '7d' ? 7 : timeRange === '30d' ? 30 : timeRange === '90d' ? 90 : 365;
     const cutoffDate = subDays(now, daysAgo);
-    
+
     return users.filter(user => {
       try {
         let userDate: Date;
-        if (user.createdAt instanceof Date) {
-          userDate = user.createdAt;
-        } else if (user.createdAt?.toDate) {
-          userDate = user.createdAt.toDate();
+        const createdAt = user.createdAt as any;
+        if (createdAt instanceof Date) {
+          userDate = createdAt;
+        } else if (createdAt?.toDate) {
+          userDate = createdAt.toDate();
         } else {
-          userDate = new Date(user.createdAt);
+          userDate = new Date(createdAt);
         }
         return userDate >= cutoffDate;
       } catch (e) {
@@ -107,13 +103,14 @@ export default function AnalyticsDashboard() {
 
   const getRevenueByMonth = () => {
     const monthlyRevenue: { [key: string]: number } = {};
-    
+
     bookings.forEach(booking => {
       if (booking.status === 'completed') {
         try {
-          const bookingDate = booking.createdAt instanceof Date 
-            ? booking.createdAt 
-            : (booking.createdAt?.toDate ? booking.createdAt.toDate() : new Date(booking.createdAt));
+          const createdAt = booking.createdAt as any;
+          const bookingDate = createdAt instanceof Date
+            ? createdAt
+            : (createdAt?.toDate ? createdAt.toDate() : new Date(createdAt));
           const month = format(bookingDate, 'MMM yyyy');
           monthlyRevenue[month] = (monthlyRevenue[month] || 0) + (booking.payment?.amount || 0);
         } catch (e) {
@@ -121,10 +118,10 @@ export default function AnalyticsDashboard() {
         }
       }
     });
-    
+
     const entries = Object.entries(monthlyRevenue);
     if (entries.length === 0) return [];
-    
+
     return entries
       .sort((a, b) => {
         try {
@@ -143,11 +140,11 @@ export default function AnalyticsDashboard() {
       completed: 0,
       cancelled: 0
     };
-    
+
     bookings.forEach(booking => {
       statusCounts[booking.status]++;
     });
-    
+
     return Object.entries(statusCounts).map(([status, count]) => ({
       status: status.charAt(0).toUpperCase() + status.slice(1),
       count,
@@ -157,7 +154,7 @@ export default function AnalyticsDashboard() {
 
   const getTopSkills = () => {
     const skillCounts: { [key: string]: number } = {};
-    
+
     users.forEach(user => {
       if (user.role === 'worker' && user.profile.skills) {
         user.profile.skills.forEach(skill => {
@@ -165,7 +162,7 @@ export default function AnalyticsDashboard() {
         });
       }
     });
-    
+
     return Object.entries(skillCounts)
       .sort((a, b) => b[1] - a[1])
       .slice(0, 5)
@@ -212,11 +209,10 @@ export default function AnalyticsDashboard() {
               <button
                 key={range}
                 onClick={() => setTimeRange(range)}
-                className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${
-                  timeRange === range
-                    ? 'bg-blue-100 text-blue-700'
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
+                className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${timeRange === range
+                  ? 'bg-blue-100 text-blue-700'
+                  : 'text-gray-500 hover:text-gray-700'
+                  }`}
               >
                 {range === '7d' ? '7 Days' : range === '30d' ? '30 Days' : range === '90d' ? '90 Days' : '1 Year'}
               </button>
@@ -236,7 +232,7 @@ export default function AnalyticsDashboard() {
             </div>
           </div>
         </div>
-        
+
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center">
             <Calendar className="h-8 w-8 text-green-600" />
@@ -246,7 +242,7 @@ export default function AnalyticsDashboard() {
             </div>
           </div>
         </div>
-        
+
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center">
             <DollarSign className="h-8 w-8 text-purple-600" />
@@ -261,14 +257,14 @@ export default function AnalyticsDashboard() {
             </div>
           </div>
         </div>
-        
+
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center">
             <TrendingUp className="h-8 w-8 text-orange-600" />
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Completion Rate</p>
               <p className="text-2xl font-semibold text-gray-900">
-                {filteredBookings.length > 0 
+                {filteredBookings.length > 0
                   ? Math.round((filteredBookings.filter(b => b.status === 'completed').length / filteredBookings.length) * 100)
                   : 0}%
               </p>
@@ -295,8 +291,8 @@ export default function AnalyticsDashboard() {
                     <span className="text-sm text-gray-600">{month}</span>
                     <div className="flex items-center space-x-2">
                       <div className="w-32 bg-gray-200 rounded-full h-2">
-                        <div 
-                          className="bg-blue-600 h-2 rounded-full" 
+                        <div
+                          className="bg-blue-600 h-2 rounded-full"
                           style={{ width: `${percentage}%` }}
                         ></div>
                       </div>
@@ -323,12 +319,11 @@ export default function AnalyticsDashboard() {
                 <span className="text-sm text-gray-600">{status}</span>
                 <div className="flex items-center space-x-2">
                   <div className="w-32 bg-gray-200 rounded-full h-2">
-                    <div 
-                      className={`h-2 rounded-full ${
-                        status === 'Completed' ? 'bg-green-500' :
+                    <div
+                      className={`h-2 rounded-full ${status === 'Completed' ? 'bg-green-500' :
                         status === 'Pending' ? 'bg-yellow-500' :
-                        status === 'Accepted' ? 'bg-blue-500' : 'bg-red-500'
-                      }`}
+                          status === 'Accepted' ? 'bg-blue-500' : 'bg-red-500'
+                        }`}
                       style={{ width: `${percentage}%` }}
                     ></div>
                   </div>

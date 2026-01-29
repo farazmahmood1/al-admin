@@ -1,4 +1,4 @@
-import { LucideIcon } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 
 interface StatsCardProps {
   title: string;
@@ -32,9 +32,8 @@ export default function StatsCard({ title, value, icon: Icon, color, change, sub
             <p className="text-xs text-gray-500 mt-1">{subtitle}</p>
           )}
           {change && (
-            <p className={`text-sm font-medium ${
-              change.startsWith('+') ? 'text-green-600' : 'text-red-600'
-            }`}>
+            <p className={`text-sm font-medium ${change.startsWith('+') ? 'text-green-600' : 'text-red-600'
+              }`}>
               {change}
             </p>
           )}
